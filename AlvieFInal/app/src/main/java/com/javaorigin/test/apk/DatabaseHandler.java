@@ -44,6 +44,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_NUMBER + " TEXT" + ")";
         db.execSQL(CREATE_CONTACTS_TABLE);
     }
+    public void DeleteList(String tableName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS" + tableName);
+
+    }
+    public void DeleteContactFromList(String tableName , String Number){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(tableName, KEY_ID + " = ?",
+                new String[] { Number });
+        db.close();
+    }
+
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TableName);

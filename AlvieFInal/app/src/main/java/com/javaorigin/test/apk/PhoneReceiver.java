@@ -13,6 +13,9 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Method;
 
 @SuppressWarnings("rawtypes")
@@ -26,14 +29,29 @@ public class PhoneReceiver extends BroadcastReceiver {
     @Override
         public void onReceive(Context context, Intent intent) {
         DatabaseHandler db=new DatabaseHandler(context);
-
+    String temp="";
     String incomingNumber;
             if (!intent.getAction().equals("android.intent.action.PHONE_STATE")) return;
             String extraState = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
             if (extraState.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
 
                      incomingNumber =intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-                     if(db.isContact(incomingNumber))
+                try {
+                    FileInputStream fin = context.getApplicationContext().openFileInput("Specificnumber.txt");
+                    int c;
+                    while( (c = fin.read()) != -1){
+                        temp = temp + Character.toString((char)c);
+                    }
+
+                    fin.close();
+                }
+                catch(FileNotFoundException j) {
+                Log.d("File not found", "Exception occured in PhoneReciever");
+                }
+                catch(IOException e){
+                    Log.d("Ioexception","Exception Occured in PhoneReciever.java");
+                }
+                    if(db.isContact(incomingNumber) || temp==incomingNumber)
                          terminateCall(context);
 
             }
